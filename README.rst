@@ -9,7 +9,23 @@ import and use or simply "configure-together" game components with config files.
 
 A BoardGame project framework by Kyle Stapp.
 
+==========================
+Get Developing!
+==========================
+Checkout the code::
+    git clone http://github.com/RabidCicada/boardgame_framework
 
+Install Dependencies::
+    cd dev
+    pip install requirements.txt
+
+==========================
+To Generate the Docs
+==========================
+Install Dev Dependencies then::
+    cd docs
+    make
+    
 ==========================
 Frequently Asked Questions
 ==========================
