@@ -24,9 +24,9 @@ copyright = '2018, Kyle Stapp'
 author = 'Kyle Stapp'
 
 # The short X.Y version
-version = ''
+#version = ''
 # The full version, including alpha/beta/rc tags
-release = ''
+#release = ''
 
 
 # -- General configuration ---------------------------------------------------
@@ -39,7 +39,7 @@ release = ''
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'pbr.sphinxext',
+    #'pbr.sphinxext',
     'sphinxcontrib.apidoc',
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
