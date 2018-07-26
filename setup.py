@@ -2,7 +2,7 @@
 from setuptools import setup
 
 setup(
-    setup_requires=['pbr'],
+    setup_requires=['pbr>=4.2.0'],
     package_dir={'':'src/'}, # Needed for distutils
     pbr=True
 )
