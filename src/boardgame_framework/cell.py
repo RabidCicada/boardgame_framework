@@ -1,3 +1,4 @@
+import types
 
 class Cell():
     """
@@ -13,4 +14,5 @@ class Cell():
         self.name = name
         self.coord = coord
         self.connections = list()
-        #self.children
+        self.children = list()
+        self.attributes = types.SimpleNamespace() 
