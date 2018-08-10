@@ -1,0 +1,5 @@
+The game engine should have all state mapped and be the rule enforcer/action taker.
+
+But I intend to allow viewers to use well established api's to render and drive the
+game engine.  This could be a pygame viewer using the native python api,
+html5/django/angular renderer with a rest api, or other methods.
