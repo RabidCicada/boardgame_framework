@@ -9,6 +9,7 @@ class Pawn():
 
     def act():
         print("I'm acting!!!")
+        return "derp"
 
     def move():
         pass
