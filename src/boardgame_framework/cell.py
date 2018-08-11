@@ -1,4 +1,4 @@
-import types
+import itertools
 
 class Cell():
     """
@@ -9,10 +9,19 @@ class Cell():
     hexes in terra mystica, settlers of catan, etc.
     """
 
-    def __init__(self, name=None, coord, ):
+    new_uid = itertools.count().next
+
+    def __init__(self, uid=None, name=None, attributes=None ):
 
         self.name = name
+        self.uid = new_uid() if uid is None else uid
         self.coord = coord
         self.connections = list()
-        self.children = list()
-        self.attributes = types.SimpleNamespace() 
+        self.attributes = dict()
+        #self.children
+
+    def __str__(self):
+        return F"{type(self).__name__}-{self.uid}"
+
+    def __repr__(self):
+        return F"{type(self).__name__}-{self.uid}"
