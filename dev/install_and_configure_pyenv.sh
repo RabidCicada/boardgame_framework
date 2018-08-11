@@ -14,6 +14,5 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 ZZZBBB
 source ~/.bash_profile
-pyenv install 3.6.6
 pyenv install 3.7.0
 pyenv virtualenv 3.7.0 bgfw_dev
