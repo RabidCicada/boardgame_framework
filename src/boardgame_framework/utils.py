@@ -1,5 +1,5 @@
 import pathlib
-import cell
+from boardgame_framework.cell import Cell
 
 class CellManager():
     cell_parsers = {}
@@ -14,8 +14,8 @@ class CellManager():
         return anon_reg_func
 
     @classmethod
-    def load_cells(cells_path):
-        map_parsers[pathlib.Path(cells_path).suffix()](cells_path)
+    def load_cells(cls,cells_path):
+        cls.cell_parsers[pathlib.Path(cells_path).suffix](cells_path)
 
     @classmethod
     def create_cell(cell_dict):
@@ -29,16 +29,16 @@ class CellManager():
         for cell in cell_dict.cells:
 
             #parse subcells
-            create_cell(subcell_dict):
+            cls.create_cell(subcell_dict)
 
 
-@CellManager.register_cell_parser('json')
+@CellManager.register_cell_parser('.json')
 def load_cell_json(cell_path):
     import json
     with open(cell_path, "r") as json_cells:
         data = json.load(json_cells)
 
-@CellManager.register_cell_parser('json')
+@CellManager.register_cell_parser('.yml')
 def load_cell_yml(cell_path):
     import yaml
     with open(cell_path, "r") as yaml_cells:
