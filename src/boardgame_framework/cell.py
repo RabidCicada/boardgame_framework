@@ -9,12 +9,12 @@ class Cell():
     hexes in terra mystica, settlers of catan, etc.
     """
 
-    new_uid = itertools.count().next
+    new_uid = itertools.count()
 
     def __init__(self, uid=None, name=None, attributes=None ):
 
         self.name = name
-        self.uid = new_uid() if uid is None else uid
+        self.uid = next(new_uid) if uid is None else uid
         self.coord = coord
         self.connections = list()
         self.attributes = dict()
