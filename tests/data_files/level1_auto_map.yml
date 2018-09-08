@@ -1,0 +1,70 @@
+---
+  cells:
+    - name: "main_room"
+      auto_cells:
+        cell_type: "hex"
+        coord_type: "rect"
+        attributes:
+          purpose: "fluff"
+          attr1: "Morefluff"
+        dimensions:
+          x: 8
+          y: 6
+        filter:
+          type: "rect"
+          flat_pattern:
+            - [ 1,0,0,0,0,0,0,0 ]
+            -  [ 0,0,0,0,0,0,0,0 ]
+            - [ 1,0,0,0,0,0,0,0 ]
+            -  [ 0,0,0,0,0,0,0,0 ]
+            - [ 1,0,0,0,0,0,0,0 ]
+            -  [ 0,0,0,0,0,0,0,0 ]
+        auto_connect: yes
+    - name: "second_room"
+      auto_cells:
+        cell_type: "hex"
+        coord_type: "cubed"
+        dimensions:
+          x: 7
+          y: 7
+          z: 7
+        filter:
+          type: "rect"
+          flat_pattern:
+            - [ 0,0,0,0,0,0,0 ]
+            -  [ 0,0,0,0,0,0,0,0 ]
+            - [ 1,0,0,0,0,0,0,0 ]
+            -  [ 0,0,0,0,0,0,0,0 ]
+            - [ 1,0,0,0,0,0,0,0 ]
+            -  [ 0,0,0,0,0,0,0,0 ]
+    - name: "third_room"
+      auto_cells:
+        cell_type: "hex"
+        coord_type: "cubed"
+        dimensions:
+          x: 7
+          y: 7
+          z: 7
+        filter:
+          type: "cubed"
+          flat_pattern:
+            -   [ 0,0,0,0 ]
+            -  [ 0,0,0,0,0 ]
+            - [ 1,0,0,0,0,1 ]
+            -  [ 0,0,0,0,0 ]
+            -   [ 1,0,0,0 ]
+    - name: "fourth_room"
+      auto_cells:
+        cell_type: "square"
+        coord_type: "offset"
+        dimensions:
+          x: 7
+          y: 5
+        filter:
+          type: "offset"
+          flat_pattern:
+            - [ 0,0,0,0,0,0,1 ]
+            - [ 0,0,0,0,0,0,1 ]
+            - [ 0,0,0,0,0,0,1 ]
+            - [ 0,0,0,0,0,0,1 ]
+            - [ 0,0,0,0,0,0,1 ]
