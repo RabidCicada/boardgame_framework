@@ -1,5 +1,5 @@
 ---
-  cells:
+  - cells:
     - name: '1a'
       connections:
         - '1b'

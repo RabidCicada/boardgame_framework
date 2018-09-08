@@ -25,7 +25,34 @@ To Generate the Docs
 Install Dev Dependencies then::
     cd docs
     make
-    
+
+================
+To Run the Tests
+================
+
+Quick and Dirty:
+
+.. code-block:: bash
+
+    cd src/
+    python -m pytest ../tests
+
+The Right Way:
+
+.. code-block:: bash
+
+    tox
+
+We use tox.  It builds virtual environments defined in tox.ini for different versions
+of python, then builds the installable package, then installs it, then runs the tests.
+It does this for all the versions you have defined and is suitable for continuous integration.
+
+It is intentional that you cannot run a normal pytest command without PYTHONPATH
+tomfoolery or calling pytest in the manner we show above for `Quick and Dirty`.
+By not being importable it prevents a whole class of testing problems related to accidentally
+getting your local dev code instead of what is installed by the package.
+
+
 ==========================
 Frequently Asked Questions
 ==========================
