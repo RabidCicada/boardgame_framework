@@ -3,7 +3,7 @@
     - name: "main_room"
       auto_cells:
         cell_type: "hex"
-        coord_type: "rect"
+        system: "oddr"
         attributes:
           purpose: "fluff"
           attr1: "Morefluff"
@@ -23,11 +23,10 @@
     - name: "second_room"
       auto_cells:
         cell_type: "hex"
-        coord_type: "cubed"
+        system: "evenr"
         dimensions:
           x: 7
-          y: 7
-          z: 7
+          y: 6
         filter:
           type: "rect"
           flat_pattern:
@@ -40,11 +39,11 @@
     - name: "third_room"
       auto_cells:
         cell_type: "hex"
-        coord_type: "cubed"
+        system: "hex"
         dimensions:
-          x: 7
-          y: 7
-          z: 7
+          x: 5
+          y: 5
+          z: 5
         filter:
           type: "cubed"
           flat_pattern:
@@ -56,7 +55,7 @@
     - name: "fourth_room"
       auto_cells:
         cell_type: "square"
-        coord_type: "offset"
+        system: "square"
         dimensions:
           x: 7
           y: 5
