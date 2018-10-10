@@ -9,8 +9,8 @@ def test_explicit_cell_yaml():
 def test_auto_cell_yaml():
     cells = Cell.load_cells("../tests/data_files/level1_auto_map.yml")
 
-    #4 top level cells + 48 + 42 + 19 + 35
-    assert len(cells) == 148
+    #4 top level cells + 48 + 42 + 19 + 35 - the 9 xform removed coordinates
+    assert len(cells) == 139
 
 def test_explicit_cell_json():
     cells = Cell.load_cells("../tests/data_files/level1_explicit_map.json")

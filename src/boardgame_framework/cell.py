@@ -20,6 +20,7 @@ class Cell():
 
     new_uid = itertools.count()
     cell_parsers = dict()
+    cell_xforms = dict()
 
     def __init__(self, cell_type=None, uid=None, name=None, attributes=None, coord=None, connections=None, **kwargs):
 
@@ -49,6 +50,14 @@ class Cell():
         def anon_reg_func(callback):
             logging.debug(F"registering cell parser for '{extension}'")
             cls.cell_parsers[extension] = callback
+            return callback
+        return anon_reg_func
+
+    @classmethod
+    def register_cell_xform(cls,xform_name):
+        def anon_reg_func(callback):
+            logging.debug(F"registering cell xform for '{xform_name}'")
+            cls.cell_xforms[xform_name] = callback
             return callback
         return anon_reg_func
 
@@ -101,8 +110,19 @@ class Cell():
                 cells.extend(cls.create_cell(cell))
 
         if "auto_cells" in cell_dict:
+            auto_cell_dict = cell_dict["auto_cells"]
+
             #Instantiate the auto_cells
-            cells.extend(cls.create_auto_cells(cell_dict["auto_cells"]))
+            auto_cells = cls.create_auto_cells(cell_dict["auto_cells"])
+
+            logger.debug(F"Preparing to xform for {cell_dict['name']}")
+
+            if "xform" in cell_dict["auto_cells"] and cell_dict["auto_cells"]["xform"]:
+                for xform in cell_dict["auto_cells"]["xform"]:
+                    auto_cells = cls.cell_xforms[xform["type"]](xform["data"],auto_cells)
+
+            cells.extend(auto_cells)
+
 
         return cells
 
@@ -125,3 +145,53 @@ def load_cell_yml(cell_path):
         data = yaml.load(yaml_cells)
 
     return Cell.create_subcells(data)
+
+@Cell.register_cell_xform("oddr_flat_filter")
+def oddr_flat_filter(data, cells):
+    coords = list()
+    oddr = CoordinateSystemMgr.get_coord_system("oddr")
+
+    for yidx,row in enumerate(data):
+        for xidx,remove in enumerate(row):
+            if remove:
+                coords.append(oddr.coord(x=xidx,y=yidx))
+    logger.debug(F"filtering out cordinates: '{coords}'")
+
+    return filter(lambda cell: oddr.from_other_system(cell.coord.system.system_name, cell.coord) not in coords, cells)
+
+@Cell.register_cell_xform("evenr_flat_filter")
+def evenr_flat_filter(data, cells):
+    coords = list()
+    oddr = CoordinateSystemMgr.get_coord_system("evenr")
+
+    for yidx,row in enumerate(data):
+        for xidx,remove in enumerate(row):
+            if remove:
+                coords.append(oddr.coord(x=xidx,y=yidx))
+    logger.debug(F"filtering out cordinates: '{coords}'")
+
+    return filter(lambda cell: oddr.from_other_system(cell.coord.system.system_name, cell.coord) not in coords, cells)
+
+@Cell.register_cell_xform("square_flat_filter")
+def square_flat_filter(data, cells):
+    coords = list()
+    oddr = CoordinateSystemMgr.get_coord_system("square")
+
+    for yidx,row in enumerate(data):
+        for xidx,remove in enumerate(row):
+            if remove:
+                coords.append(oddr.coord(x=xidx,y=yidx))
+
+    logger.debug(F"filtering out cordinates: '{coords}'")
+
+    return filter(lambda cell: oddr.from_other_system(cell.coord.system.system_name, cell.coord) not in coords, cells)
+
+@Cell.register_cell_xform("hex_flat_filter")
+def cubed_flat_filter(data, cells):
+    coords = list()
+    hexsys = CoordinateSystemMgr.get_coord_system("hex")
+
+    #TODO: implement flat to coord mapping system
+    raise NotImplementedError("Need to implement the generation of hex coords from the array of 0's and 1's")
+
+    return filter(lambda cell: hexsys.from_other_system(cell.coord.system.system_name, cell.coord) not in coords, cells)
