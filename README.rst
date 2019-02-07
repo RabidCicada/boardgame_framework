@@ -12,17 +12,26 @@ A BoardGame project framework by Kyle Stapp.
 ==========================
 Get Developing!
 ==========================
-Checkout the code::
-    git clone http://github.com/RabidCicada/boardgame_framework
+Checkout the code:
 
-Install Dependencies::
+.. code-block:: bash
+
+   git clone http://github.com/RabidCicada/boardgame_framework
+
+Install Dependencies:
+
+.. code-block:: bash
+
     cd dev
     pip install requirements.txt
 
 ==========================
 To Generate the Docs
 ==========================
-Install Dev Dependencies then::
+Install Dev Dependencies then:
+
+.. code-block:: bash
+
     cd docs
     make
 
@@ -53,7 +62,6 @@ It is intentional that you cannot run a normal pytest command without PYTHONPATH
 tomfoolery or calling pytest in the manner we show above for `Quick and Dirty`.
 By not being importable it prevents a whole class of testing problems related to accidentally
 getting your local dev code instead of what is installed by the package.
-
 
 ==========================
 Frequently Asked Questions
