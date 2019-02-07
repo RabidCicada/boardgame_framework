@@ -3,13 +3,12 @@
     - name: "main_room"
       auto_cells:
         cell_type: "hex"
-        system: "oddr"
         attributes:
           purpose: "fluff"
           attr1: "Morefluff"
         dimensions:
-          x: 8
-          y: 6
+          system: "oddr"
+          dims: [8,6]
         xform:
           - type: "oddr_flat_filter"
             data:
@@ -23,10 +22,9 @@
     - name: "second_room"
       auto_cells:
         cell_type: "hex"
-        system: "evenr"
         dimensions:
-          x: 7
-          y: 6
+          system: "evenr"
+          dims: [7,6]
         xform:
           - type: "evenr_flat_filter"
             data:
@@ -39,26 +37,23 @@
     - name: "third_room"
       auto_cells:
         cell_type: "hex"
-        system: "hex"
         dimensions:
-          x: 5
-          y: 5
-          z: 5
+          system: "hex"
+          dims: [5,5,5]
         xform:
           # - type: "hex_flat_filter"
           #   data:
-          #     -   [ 0,0,0,0,0 ]
-          #     -  [ 0,0,0,0,0,0 ]
-          #     - [ 1,0,0,0,0,0,1 ]
-          #     -  [ 0,0,0,0,0,0 ]
-          #     -   [ 1,0,0,0,0 ]
+          #     -   [ 0,0,0 ]
+          #     -  [ 0,0,0,0 ]
+          #     - [ 1,0,0,0,1 ]
+          #     -  [ 0,0,0,0 ]
+          #     -   [ 1,0,0 ]
     - name: "fourth_room"
       auto_cells:
         cell_type: "square"
-        system: "square"
         dimensions:
-          x: 7
-          y: 5
+          system: "square"
+          dims: [7,5]
         xform:
           - type: "square_flat_filter"
             data:
