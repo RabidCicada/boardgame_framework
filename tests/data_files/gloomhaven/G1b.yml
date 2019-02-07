@@ -1,0 +1,11 @@
+---
+  cells:
+    - name: "G1b"
+      auto_cells:
+        name: "CHILD~G1b"
+        cell_type: "hex"
+        dimensions:
+          system: "oddr"
+          dims: [8,3]
+        xform:
+          - type: "auto_connect"

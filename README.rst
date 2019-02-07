@@ -36,6 +36,8 @@ Quick and Dirty:
 
     cd src/
     python -m pytest ../tests
+    or
+    python -m pytest ../tests --log-cli-level DEBUG -s
 
 The Right Way:
 

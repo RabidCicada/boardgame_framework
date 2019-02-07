@@ -1,0 +1,14 @@
+---
+  cells:
+    - name: "L1a"
+      auto_cells:
+        name: "CHILD~L1a"
+        cell_type: "hex"
+        attributes:
+          purpose: "fluff"
+          attr1: "Morefluff"
+        dimensions:
+          system: "oddr"
+          dims: [5,7]
+        xform:
+          - type: "auto_connect"
