@@ -1,0 +1,29 @@
+---
+  imports:
+    - "gloomhaven/G1b.yml"
+    - "gloomhaven/I1b.yml"
+    - "gloomhaven/L1a.yml"
+  cells:
+    - name: "L1a-G1b-Door"
+      cell_type: "hex"
+    - name: "G1b-I1b-Door"
+      cell_type: "hex"
+  seams:
+    -
+      type: "auto"
+      system_id: "Global"
+      integrated_system: "hex"
+      raw_system: "oddr"
+      connections:
+        -
+          - ["L1a",[0,3],0]
+          - ["L1a-G1b-Door",[0,0],4]
+        -
+          - ["L1a-G1b-Door",[0,0],1]
+          - ["G1b",[0,1],0]
+        -
+          - ["G1b",[3,2],2]
+          - ["G1b-I1b-Door",[0,0],0]
+        -
+          - ["G1b-I1b-Door",[0,0],3]
+          - ["I1b",[2,4],2]

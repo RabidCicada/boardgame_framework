@@ -1,0 +1,22 @@
+{
+	"cells": [
+		{
+			"name": "1a",
+			"attributes": {
+				"attr1": "derp",
+				"attr2": "ferp"
+			},
+			"connections": {
+				"explicit": [
+					"2a"
+				]
+			}
+		},
+		{
+			"name": "2a",
+			"connections": [
+				"1a"
+			]
+		}
+	]
+}

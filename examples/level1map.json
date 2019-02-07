@@ -1,0 +1,98 @@
+{
+	"cells": [
+		{
+			"name": "1a",
+			"attributes": {
+				"attr1": "derp",
+				"attr2": "ferp"
+			},
+			"connections": [
+				"1b",
+				"2a"
+			],
+			"cells": [
+				{
+					"name": "nesteda",
+					"attributes": {
+						"attr1": "derp",
+						"attr2": "ferp"
+					},
+					"connections": [
+						"1b",
+						"2a"
+					]
+				},
+				{
+					"name": "nestedb",
+					"connections": [
+						"1a",
+						"2b",
+						"1c"
+					]
+				},
+			]
+		},
+		{
+			"name": "1b",
+			"connections": [
+				"1a",
+				"2b",
+				"1c"
+			]
+		},
+		{
+			"name": "1c",
+			"connections": [
+				"1b",
+				"2c"
+			]
+		},
+		{
+			"name": "2a",
+			"connections": [
+				"1a",
+				"2b",
+				"3a"
+			]
+		},
+		{
+			"name": "2b",
+			"connections": [
+				"1b",
+				"2a",
+				"2c",
+				"3b"
+			]
+		},
+		{
+			"name": "2c",
+			"connections": [
+				"1c",
+				"2b",
+				"3c"
+			]
+		},
+		{
+			"name": "3a",
+			"connections": [
+				"2a",
+				"3b"
+			]
+		},
+		{
+			"name": "3b",
+			"connections": [
+				"2b",
+				"3a",
+				"3c"
+			]
+		},
+		{
+			"name": "3c",
+			"connections": [
+				"2c",
+				"3b"
+			]
+		}
+	]
+}

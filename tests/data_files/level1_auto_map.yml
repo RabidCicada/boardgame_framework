@@ -1,0 +1,64 @@
+---
+  cells:
+    - name: "main_room"
+      auto_cells:
+        cell_type: "hex"
+        attributes:
+          purpose: "fluff"
+          attr1: "Morefluff"
+        dimensions:
+          system: "oddr"
+          dims: [8,6]
+        xform:
+          - type: "oddr_flat_filter"
+            data:
+              - [ 1,0,0,0,0,0,0,0 ]
+              -  [ 0,0,0,0,0,0,0,0 ]
+              - [ 1,0,0,0,0,0,0,0 ]
+              -  [ 0,0,0,0,0,0,0,0 ]
+              - [ 1,0,0,0,0,0,0,0 ]
+              -  [ 0,0,0,0,0,0,0,0 ]
+        auto_connect: yes
+    - name: "second_room"
+      auto_cells:
+        cell_type: "hex"
+        dimensions:
+          system: "evenr"
+          dims: [7,6]
+        xform:
+          - type: "evenr_flat_filter"
+            data:
+              -   [ 0,0,0,0,0,0,0 ]
+              -  [ 0,0,0,0,0,0,0,0 ]
+              -   [ 1,0,0,0,0,0,0,0 ]
+              -  [ 0,0,0,0,0,0,0,0 ]
+              -   [ 1,0,0,0,0,0,0,0 ]
+              -  [ 0,0,0,0,0,0,0,0 ]
+    - name: "third_room"
+      auto_cells:
+        cell_type: "hex"
+        dimensions:
+          system: "hex"
+          dims: [5,5,5]
+        xform:
+          # - type: "hex_flat_filter"
+          #   data:
+          #     -   [ 0,0,0 ]
+          #     -  [ 0,0,0,0 ]
+          #     - [ 1,0,0,0,1 ]
+          #     -  [ 0,0,0,0 ]
+          #     -   [ 1,0,0 ]
+    - name: "fourth_room"
+      auto_cells:
+        cell_type: "square"
+        dimensions:
+          system: "square"
+          dims: [7,5]
+        xform:
+          - type: "square_flat_filter"
+            data:
+              - [ 0,0,0,0,0,0,1 ]
+              - [ 0,0,0,0,0,0,0 ]
+              - [ 0,0,0,0,0,0,1 ]
+              - [ 0,0,0,0,0,0,1 ]
+              - [ 0,0,0,0,0,0,1 ]

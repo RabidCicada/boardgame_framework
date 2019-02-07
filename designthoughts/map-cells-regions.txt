@@ -1,0 +1,29 @@
+
+Map has neighbors on cells.  Is that useful?  The connection information lets
+people move one unit at a time.
+**We should force path generation or movement plan from actor client.  Then
+
+What about reachability calculations and other math?
+We need to let viewers query board for basic info.  Reachability calculations
+need to be up to public information(not hidden info) and the unit that's moving.
+
+Explicit connections allow game effects like "stairs" or "portals", that
+ephemerally allow access to other locations.
+
+How do we establish layout/connections and how are they used by movement?
+Simple case is one region per move.  Simple.  check if region is connected.
+
+What about the case of a knight in chess?  Can move in an L.  The ability to move
+moves over obstructions and ignores normal region connectivity (though it must use
+normal connectivity by moving in one mainline direction 2 then mainline perpendicular one.)
+Bishops move diagonally.
+There's also the concept of "free move", characters are free to move in any direction
+one region/cell at a time like betrayal at house on the hill.
+
+Ask engine about map layout?
+
+Ask engine for all move patterns to read a particular cell given a particular Unit
+Ask engine for all possible destination cells
+Ask engine for all possible move patterns through a particular cells
+
+Automatic annealing of many map segments into a universal grid where the invalid locations are simply non-existent.  E.G. the rooms joined together in gloomhaven
