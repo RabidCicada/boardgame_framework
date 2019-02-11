@@ -1,8 +1,8 @@
 ---
   imports:
-    - "gloomhaven/G1b.yml"
-    - "gloomhaven/I1b.yml"
-    - "gloomhaven/L1a.yml"
+    - "G1b.yml"
+    - "I1b.yml"
+    - "L1a.yml"
   cells:
     - name: "L1a-G1b-Door"
       cell_type: "hex"
@@ -10,7 +10,7 @@
       cell_type: "hex"
   seams:
     -
-      type: "auto"
+      seam_type: "auto"
       system_id: "Global"
       integrated_system: "hex"
       raw_system: "oddr"
