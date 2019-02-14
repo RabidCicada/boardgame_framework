@@ -37,7 +37,8 @@ Install Dev Dependencies then:
 
 To have pbr generate Changelog and AUTHORS automatically:
 
--- code-block::bash
+.. code-block:: bash
+
     python setup.py sdist
 
 ================
