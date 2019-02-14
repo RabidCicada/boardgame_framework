@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class Cell():
     """
-    Be the representation of regions of the gamespace.
+    Representation of regions of the gamespace.
 
     A Cell is a representation of physical space in the game.  This can be squares
     in chess and checkers, regions like playfield etc for magic the gathering,
