@@ -167,12 +167,12 @@ class CellMgr():
     hexes in terra mystica, settlers of catan, etc.
     """
 
-    cell_parsers = dict()
-    cell_xforms = dict()
-    cells_by_coord = dict()
-    cells_by_coord_tuple = dict()
-    cells_by_name = dict()
-    cells_by_uid = dict()
+    _cell_parsers = dict()
+    _cell_xforms = dict()
+    _cells_by_coord = dict()
+    _cells_by_coord_tuple = dict()
+    _cells_by_name = dict()
+    _cells_by_uid = dict()
 
     def __str__(self):
         return f"{type(self).__name__}"
@@ -192,7 +192,7 @@ class CellMgr():
         into dicts of cell configuration information"""
         def anon_reg_func(callback):
             logging.debug("registering cell parser for '%s'", extension)
-            cls.cell_parsers[extension] = callback
+            cls._cell_parsers[extension] = callback
             return callback
         return anon_reg_func
 
@@ -203,7 +203,7 @@ class CellMgr():
         """
         def anon_reg_func(callback):
             logging.debug("registering cell xform for '%s'", xform_name)
-            cls.cell_xforms[xform_name] = callback
+            cls._cell_xforms[xform_name] = callback
             return callback
         return anon_reg_func
 
@@ -212,7 +212,7 @@ class CellMgr():
         """Dispatch function for loading cells from different filetypes.
         New filetype support can be dynamically provided with the decorator
         @CellMgr.register_cell_parser"""
-        return cls.cell_parsers[pathlib.Path(cells_path).suffix](cells_path, basedir=basedir)
+        return cls._cell_parsers[pathlib.Path(cells_path).suffix](cells_path, basedir=basedir)
 
     @staticmethod
     def create_auto_cells(parent_cell, cell_dict):
@@ -260,10 +260,10 @@ class CellMgr():
     @classmethod
     def register_cell_to_coord(cls, cell, coord):
         """Registers a cell by coordinate in the CellMgr"""
-        cls.cells_by_coord[coord] = cell
-        if coord.system.system_tuple not in cls.cells_by_coord_tuple:
-            cls.cells_by_coord_tuple[coord.system.system_tuple] = list()
-        cls.cells_by_coord_tuple[coord.system.system_tuple].append(cell)
+        cls._cells_by_coord[coord] = cell
+        if coord.system.system_tuple not in cls._cells_by_coord_tuple:
+            cls._cells_by_coord_tuple[coord.system.system_tuple] = list()
+        cls._cells_by_coord_tuple[coord.system.system_tuple].append(cell)
 
 
 
@@ -272,19 +272,19 @@ class CellMgr():
         """Register a single cell with the CellMgr to be tracked.  Automatically
         indexes by a number of methods for easy lookup/retrieval"""
         if cell.name:
-            cls.cells_by_name[cell.name] = cell
+            cls._cells_by_name[cell.name] = cell
         if cell.coord:
             cls.register_cell_to_coord(cell, cell.coord)
-        cls.cells_by_uid[cell.uid] = cell
+        cls._cells_by_uid[cell.uid] = cell
 
     @classmethod
     def unregister_cell(cls, cell):
         """Unregisters the cell by removing it from all the indexes"""
-        if hasattr(cell, 'name') and cell.name in cls.cells_by_name:
-            del cls.cells_by_name[cell.name]
-        if hasattr(cell, 'coord') and cell.coord in cls.cells_by_coord:
-            del cls.cells_by_coord[cell.coord]
-        del cls.cells_by_uid[cell.uid]
+        if hasattr(cell, 'name') and cell.name in cls._cells_by_name:
+            del cls._cells_by_name[cell.name]
+        if hasattr(cell, 'coord') and cell.coord in cls._cells_by_coord:
+            del cls._cells_by_coord[cell.coord]
+        del cls._cells_by_uid[cell.uid]
 
     @classmethod
     def unregister_cells(cls, cells):
@@ -295,9 +295,9 @@ class CellMgr():
     @classmethod
     def unregister_all(cls):
         """Removes/resets all tracking indexes"""
-        cls.cells_by_name = dict()
-        cls.cells_by_coord = dict()
-        cls.cells_by_uid = dict()
+        cls._cells_by_name = dict()
+        cls._cells_by_coord = dict()
+        cls._cells_by_uid = dict()
 
     @classmethod
     def create_cell(cls, cell_dict, parent_cell=None):
@@ -360,7 +360,7 @@ class CellMgr():
                 c2 = cls.by_coord(cell2_coord_system.from_other_system(raw_coord_sys.coord(*(conn[1][1]))))
                 #logger.debug("epc1:{c1} epc2:{c2}")
 
-                if not seamed_coord_sys.system_tuple in cls.cells_by_coord_tuple:
+                if not seamed_coord_sys.system_tuple in cls._cells_by_coord_tuple:
                     # Subsume the coordinates into the seamed system
                     # This establishes the first coordinate system as the "root" coordinate system
                     # The others will be seamed onto this one and their properties
@@ -443,8 +443,8 @@ class CellMgr():
 
             if "xform" in auto_cell_dict and auto_cell_dict["xform"]:
                 for xform in auto_cell_dict['xform']:
-                    if xform['type'] in cls.cell_xforms:
-                        auto_cells = cls.cell_xforms[xform['type']](xform["data"] if "data" in xform else None, auto_cells)
+                    if xform['type'] in cls._cell_xforms:
+                        auto_cells = cls._cell_xforms[xform['type']](xform["data"] if "data" in xform else None, auto_cells)
                     else:
                         raise RuntimeError(F"No such xform {xform['type']} exists.  Ensure the xform has been made available to bgframework with decorator @CellMgr.register_cell_xform")
 
@@ -474,22 +474,22 @@ class CellMgr():
     @classmethod
     def by_coord(cls, coord):
         """Retrieve a cell by coordinate"""
-        return cls.cells_by_coord.get(coord, None)
+        return cls._cells_by_coord.get(coord, None)
 
     @classmethod
     def by_name(cls, name):
         """Retrieve a cell by name"""
-        return cls.cells_by_name.get(name, None)
+        return cls._cells_by_name.get(name, None)
 
     @classmethod
     def by_uid(cls, uid):
         """Retrieve a cell by uid"""
-        return cls.cells_by_uid.get(uid, None)
+        return cls._cells_by_uid.get(uid, None)
 
     @classmethod
     def by_coord_id(cls, idtuple):
         """Retrieve list of cells by coordinate system id"""
-        return cls.cells_by_coord_tuple.get(idtuple, None)
+        return cls._cells_by_coord_tuple.get(idtuple, None)
 
 
 @CellMgr.register_cell_parser('.json')
