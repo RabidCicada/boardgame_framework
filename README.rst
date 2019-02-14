@@ -35,6 +35,11 @@ Install Dev Dependencies then:
     cd docs
     make
 
+To have pbr generate Changelog and AUTHORS automatically:
+
+-- code-block::bash
+    python setup.py sdist
+
 ================
 To Run the Tests
 ================
