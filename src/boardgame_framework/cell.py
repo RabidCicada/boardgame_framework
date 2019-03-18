@@ -33,7 +33,7 @@ class Cell():
 
         #Structural information
         self.parent = None
-        self.children = set()
+        self.children = list()
         self.connections = connections
         self.neighbors = dict()
 
@@ -52,13 +52,19 @@ class Cell():
 
         self.attributes = attributes
 
+    def __getstate__(self):
+        return self.__dict__
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
     def __str__(self):
         return (f"{type(self).__name__}-{self.uid}-'{self.name}'-"
                 f"{len(self.children)}-COORD:{self.coord}")
 
     def __repr__(self):
         return (f"{type(self).__name__}-{self.uid}-'{self.name}'-"
-                f"{len(self.children)}-COORD:{self.coord}")
+                f"{len(self.children)}-COORD-{self.coord}")
 
     # @property
     # def coord(self):
@@ -86,7 +92,7 @@ class Cell():
         Additionally register with CellMgr so that the cell is retrievable using
         coordinate or coordinate_system_id
         """
-        CellMgr.register_cell_to_coord(self, coord)
+        CellMgr.register_coord_to_cell(self, coord)
         self.coords[coord.system.system_tuple] = coord
         if coord.system.system_tuple not in self.neighbors:
             self.neighbors[coord.system.system_tuple] = [None] * len(coord.system.dirs)
@@ -120,7 +126,8 @@ class Cell():
     def add_child(self, cell, reflexive=False):
         """Add a child cell to this cell, and optionally set the child's parent
         to this cell"""
-        self.children.add(cell)
+        #self.children.add(cell)
+        self.children.append(cell)
         if reflexive:
             cell.set_parent(self)
 
@@ -173,6 +180,9 @@ class CellMgr():
     _cells_by_coord_tuple = dict()
     _cells_by_name = dict()
     _cells_by_uid = dict()
+    _stats_by_coord_tuple = dict()
+
+    _xy_convsys = CoordinateSystemMgr.create_coord_system('xy', '_xyconv')
 
     def __str__(self):
         return f"{type(self).__name__}"
@@ -227,14 +237,22 @@ class CellMgr():
             raise ValueError(f"Missing one of required keys {AUTO_CELLS_REQUIRED_KEYS}")
 
         #Instantiate coordinate system in which the map is described in the external file.
-        dims_coord_system = CoordinateSystemMgr.create_coord_system(cell_dict['dimensions']["system"], (parent_cell.name, "auto_dims", "Local"))
-        dims_coords = dims_coord_system.gen_coord_set(dimensions=cell_dict['dimensions']['dims'])
+        dims_coord_system = CoordinateSystemMgr.create_coord_system(
+            cell_dict['dimensions']["system"],
+            (parent_cell.name, "auto_dims", "Local"),
+            )
+        dims_coords = dims_coord_system.gen_coord_set(
+            dimensions=cell_dict['dimensions']['dims']
+            )
 
         #Instantiate the coordinate system in which the map is stored.
         #This converts the originating coordinate system into the final coordinate system
         #This allows for easy layout in the config file by using a complex coordinate system
         #under the hood.
-        coord_system = CoordinateSystemMgr.create_coord_system(cell_dict["cell_type"], (parent_cell.name, "Local"))
+        coord_system = CoordinateSystemMgr.create_coord_system(
+            cell_dict["cell_type"],
+            (parent_cell.name, "Local"),
+            )
         coords = [coord_system.from_other_system(dcoord) for dcoord in dims_coords]
         CoordinateSystemMgr.delete_coord_system((parent_cell.name, "auto_dims", "Local"))
 
@@ -246,9 +264,7 @@ class CellMgr():
         if parent_cell:
             parent_cell.add_children(cells, reflexive=True)
 
-
         return cells
-
 
     @classmethod
     def register_cells(cls, cells):
@@ -258,13 +274,74 @@ class CellMgr():
             cls.register_cell(cell)
 
     @classmethod
-    def register_cell_to_coord(cls, cell, coord):
+    def __track_coord_stats(cls, cell, coord):
+        """Record information for a coordinate system when passed the coordinate
+         of a coordinate system
+
+         This stat tracker is used primarily for tracking xy coordinate equivalents
+         for any incoming coordinate system so that it is easy to feed information
+         to a renderer, but may be used to track any information as coordinates
+         are assigned.
+         """
+        xy_coord = cls._xy_convsys.from_other_system(coord)
+
+        if ('min_x' not in cls._stats_by_coord_tuple[coord.system.system_tuple]
+                or xy_coord.x < cls._stats_by_coord_tuple[coord.system.system_tuple]['min_x']
+           ):
+            cls._stats_by_coord_tuple[coord.system.system_tuple]['min_x'] = xy_coord.x
+
+        if ('max_x' not in cls._stats_by_coord_tuple[coord.system.system_tuple]
+                or xy_coord.x > cls._stats_by_coord_tuple[coord.system.system_tuple]['max_x']
+           ):
+            cls._stats_by_coord_tuple[coord.system.system_tuple]['max_x'] = xy_coord.x
+
+        if ('min_y' not in cls._stats_by_coord_tuple[coord.system.system_tuple]
+                or xy_coord.y < cls._stats_by_coord_tuple[coord.system.system_tuple]['min_y']
+           ):
+            cls._stats_by_coord_tuple[coord.system.system_tuple]['min_y'] = xy_coord.y
+
+        if ('max_y' not in cls._stats_by_coord_tuple[coord.system.system_tuple]
+                or xy_coord.y > cls._stats_by_coord_tuple[coord.system.system_tuple]['max_y']
+           ):
+            cls._stats_by_coord_tuple[coord.system.system_tuple]['max_y'] = xy_coord.y
+
+        #logger.error("Recorded Stats for coord from %s %s",coord.system.system_tuple,
+        #             cls._stats_by_coord_tuple[coord.system.system_tuple])
+
+    @classmethod
+    def get_known_coordsys_stats(cls):
+        """Return the keys of all the known coordinate systems for stat tracking"""
+        return cls._stats_by_coord_tuple.keys()
+
+    @classmethod
+    def get_coordsys_stats(cls, sysid):
+        """Return stats tracked for a coordinate system"""
+        if sysid not in cls._stats_by_coord_tuple:
+            raise ValueError("No tracked stats for that system")
+
+        # Lazy calculate size of X for the coordinate system
+        cls._stats_by_coord_tuple[sysid]['xsize'] = (
+            cls._stats_by_coord_tuple[sysid]['max_x']
+            - cls._stats_by_coord_tuple[sysid]['min_x']
+            )
+
+        # Lazy calculate size of Y for the coordinate system
+        cls._stats_by_coord_tuple[sysid]['ysize'] = (
+            cls._stats_by_coord_tuple[sysid]['max_y']
+            - cls._stats_by_coord_tuple[sysid]['min_y']
+            )
+
+        return cls._stats_by_coord_tuple[sysid]
+
+    @classmethod
+    def register_coord_to_cell(cls, cell, coord):
         """Registers a cell by coordinate in the CellMgr"""
         cls._cells_by_coord[coord] = cell
         if coord.system.system_tuple not in cls._cells_by_coord_tuple:
             cls._cells_by_coord_tuple[coord.system.system_tuple] = list()
+            cls._stats_by_coord_tuple[coord.system.system_tuple] = dict()
         cls._cells_by_coord_tuple[coord.system.system_tuple].append(cell)
-
+        cls.__track_coord_stats(cell, coord)
 
 
     @classmethod
@@ -274,7 +351,7 @@ class CellMgr():
         if cell.name:
             cls._cells_by_name[cell.name] = cell
         if cell.coord:
-            cls.register_cell_to_coord(cell, cell.coord)
+            cls.register_coord_to_cell(cell, cell.coord)
         cls._cells_by_uid[cell.uid] = cell
 
     @classmethod
@@ -356,9 +433,12 @@ class CellMgr():
                 #cell2_coords = (cell.coord for cell in cell2_cells
 
                 #Retrieve individual adjacent cells from parent containers
-                c1 = cls.by_coord(cell1_coord_system.from_other_system(raw_coord_sys.coord(*(conn[0][1]))))
-                c2 = cls.by_coord(cell2_coord_system.from_other_system(raw_coord_sys.coord(*(conn[1][1]))))
+                c1 = cls.by_coord(cell1_coord_system.from_other_system(
+                    raw_coord_sys.coord(*(conn[0][1]))))
+                c2 = cls.by_coord(cell2_coord_system.from_other_system(
+                    raw_coord_sys.coord(*(conn[1][1]))))
                 #logger.debug("epc1:{c1} epc2:{c2}")
+                #logger.debug(CoordinateSystemMgr)
 
                 if not seamed_coord_sys.system_tuple in cls._cells_by_coord_tuple:
                     # Subsume the coordinates into the seamed system
@@ -391,12 +471,13 @@ class CellMgr():
                 # Directly map anchor c2 cell's coordinate in the seamed coordinate system
                 foreign_anchor = c2.coord  # Anchor coord in foreign system
                 if not c1.get_coord(seamed_coord_sys.system_tuple):
-                    raise RuntimeError((f"Endpoint 1 in {conn} does not have a"
-                                        f"{seamed_coord_sys.system_tuple} coordinate"))
+                    raise RuntimeError(f"Endpoint 1 in {conn} does not have a"
+                                       f"{seamed_coord_sys.system_tuple} coordinate")
                 c2.assign_default_coord(c1.get_coord(seamed_coord_sys.system_tuple)
                                         + seamed_coord_sys.dirs[seamededge_idx])
                 new_anchor = c2.coord  # Anchor coord in seamed/global system
-                #logger.debug("Directly Remapped epc2 coord {c2.coord} old default coord {foreign_anchor}")
+                #logger.debug("Directly Remapped epc2 coord {c2.coord} "
+                #             "old default coord {foreign_anchor}")
 
 
                 # Calculate new coords from xform and anchor
@@ -414,7 +495,9 @@ class CellMgr():
                         new_coord = new_anchor + new_vec
                         logger.debug("Remapping %s to %s", cell.coord, new_coord)
                         if cls.by_coord(new_coord):
-                            raise RuntimeError(F"Mapped coordinate {new_coord} from original coordinate {cell}{cell.coord} already exists")
+                            raise RuntimeError(
+                                f"Mapped coordinate {new_coord} from original "
+                                f"coordinate {cell}{cell.coord} already exists")
                         cell.assign_default_coord(new_coord)
 
         if "explicit" in connections:
@@ -439,14 +522,22 @@ class CellMgr():
             #Instantiate the auto_cells
             auto_cells = cls.create_auto_cells(parent_cell, auto_cell_dict)
 
-            logger.debug("Preparing to xform for %s (cell cnt:%s)", cell_dict['name'], len(auto_cells))
+            logger.debug("Preparing to xform for %s (cell cnt:%s)",
+                         cell_dict['name'], len(auto_cells))
 
             if "xform" in auto_cell_dict and auto_cell_dict["xform"]:
                 for xform in auto_cell_dict['xform']:
                     if xform['type'] in cls._cell_xforms:
-                        auto_cells = cls._cell_xforms[xform['type']](xform["data"] if "data" in xform else None, auto_cells)
+                        auto_cells = (
+                            cls._cell_xforms[xform['type']](
+                                xform["data"] if "data" in xform else None, auto_cells
+                            )
+                        )
                     else:
-                        raise RuntimeError(F"No such xform {xform['type']} exists.  Ensure the xform has been made available to bgframework with decorator @CellMgr.register_cell_xform")
+                        raise RuntimeError(f"No such xform {xform['type']} exists."
+                                           f" Ensure the xform has been made available"
+                                           f" to bgframework with decorator "
+                                           f"@CellMgr.register_cell_xform")
 
             logger.debug("Cell Summary for %s:\nNumCells:%s", cell_dict['name'], len(auto_cells))
             cells.extend(auto_cells)
@@ -506,11 +597,11 @@ def load_cell_json(cell_path, basedir="."):
 @CellMgr.register_cell_parser('.yml')
 def load_cell_yml(cell_path, basedir="."):
     """Parse cell file written in yaml"""
-    import yaml
+    import ruamel.yaml as yaml
     file_path = pathlib.Path(basedir, cell_path)
     logging.debug("File path: %s", file_path.absolute())
     with open(file_path, "r") as yaml_cells:
-        data = yaml.load(yaml_cells)
+        data = yaml.safe_load(yaml_cells)
 
     return CellMgr.process_cells(data, basedir=basedir)
 
@@ -542,7 +633,7 @@ def evenr_flat_filter(data, cells):
         for xidx, remove in enumerate(row):
             if remove:
                 coords.append(evenr.coord(x=xidx, y=yidx))
-    logger.debug("filtering out cordinates: '%s'",coords)
+    logger.debug("filtering out cordinates: '%s'", coords)
 
     results = list(filter(lambda cell: evenr.from_other_system(cell.coord) not in coords, cells))
     CoordinateSystemMgr.delete_coord_system("evenr_flat_filter")
@@ -573,7 +664,8 @@ def square_flat_filter(data, cells):
 #     hexsys = CoordinateSystemMgr.get_coord_system("hex")
 #
 #     #TODO: implement flat to coord mapping system
-#     raise NotImplementedError("Need to implement the generation of hex coords from the array of 0's and 1's")
+#     raise NotImplementedError(f"Need to implement the generation of hex coords"
+#                               f" from the array of 0's and 1's")
 #
 #     return filter(lambda cell: hexsys.from_other_system(cell.coord) not in coords, cells)
 
