@@ -1,0 +1,20 @@
+---
+  cells:
+    - name: "M1a"
+      auto_cells:
+        name: "CHILD~M1a"
+        cell_type: "hex"
+        dimensions:
+          system: "oddr"
+          dims: [6,7]
+        xform:
+          - type: "oddr_flat_filter"
+            data:
+              - [ 1,0,0,0,0,1 ]
+              -  [ 0,0,0,0,0,1 ]
+              - [ 0,0,0,0,0,0 ]
+              -  [ 0,0,0,0,0,1 ]
+              - [ 0,0,0,0,0,0 ]
+              -  [ 0,0,0,0,0,1 ]
+              - [ 1,0,0,0,0,1 ]
+          - type: "auto_connect"

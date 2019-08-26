@@ -1,8 +1,8 @@
 ---
   imports:
+    - "L1a.yml"
     - "G1b.yml"
     - "I1b.yml"
-    - "L1a.yml"
   cells:
     - name: "L1a-G1b-Door"
       cell_type: "hex"
@@ -14,6 +14,7 @@
       system_id: "Global"
       integrated_system: "hex"
       raw_system: "oddr"
+      root_sys_id: "L1a"
       connections:
         -
           - ["L1a",[0,3],0]

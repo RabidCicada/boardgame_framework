@@ -1,0 +1,51 @@
+---
+  imports:
+    - "A1a.yml"
+    - "A2a.yml"
+    - "A3b.yml"
+    - "A4b.yml"
+    - "M1a.yml"
+    - "B3b.yml"
+  cells:
+    - name: "M1a-A1a-Door"
+      cell_type: "hex"
+    - name: "M1a-A2a-Door"
+      cell_type: "hex"
+    - name: "M1a-A3b-Door"
+      cell_type: "hex"
+    - name: "M1a-A4b-Door"
+      cell_type: "hex"
+    - name: "M1a-B3b-Door"
+      cell_type: "hex"
+  seams:
+    -
+      seam_type: "auto"
+      system_id: "Global"
+      integrated_system: "hex"
+      raw_system: "oddr"
+      root_sys_id: "M1a"
+      connections:
+        -
+          - ["M1a",[2,0],4]
+          - ["M1a-B3b-Door",[0,0],1]
+        -
+          - ["M1a-B3b-Door",[0,0],5]
+          - ["B3b",[1,3],2]
+        -
+          - ["M1a",[0,3],0]
+          - ["M1a-A1a-Door",[0,0],3]
+        -
+          - ["M1a-A1a-Door",[0,0],0]
+          - ["A1a",[3,1],3]
+        -
+          - ["M1a",[4,3],3]
+          - ["M1a-A3b-Door",[0,0],0]
+        -
+          - ["M1a-A3b-Door",[0,0],3]
+          - ["A3b",[0,1],0]
+        # -
+        #   - ["M1a",[4,5],2]
+        #   - ["M1a-A2a-Door",[0,0],5]
+        # -
+        #   - ["M1a-A3b-Door",[0,0],3]
+        #   - ["A2a",[0,1],2]

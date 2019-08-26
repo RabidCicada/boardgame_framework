@@ -206,6 +206,12 @@ class CubedCoord():
 
         raise ValueError(f"Index must be 0, 1, or 2")
 
+    def __str__(self):
+        return f"({self.x},{self.y},{self.z})"
+
+    def __repr__(self):
+        return f"({self.x},{self.y},{self.z})-{self.system.system_tuple}"
+
 
 @dataclass(eq=True, frozen=True)
 class HexCoord(CubedCoord):
@@ -257,6 +263,12 @@ class RectCoord():
             return self.y
 
         raise ValueError(f"Index must be 0 or 1")
+
+    def __str__(self):
+        return f"({self.x},{self.y})"
+
+    def __repr__(self):
+        return f"({self.x},{self.y})-{self.system.system_tuple}"
 
 @CoordinateSystemMgr.register_coordsystem_type('hex')
 class HexCoordinateSystem(CoordinateSystem):
@@ -357,7 +369,6 @@ class HexCoordinateSystem(CoordinateSystem):
             return cnt + len(self.dirs)
 
         return cnt
-
 
 
     def gen_rotated_coords(self, anchor, coords, cnt):
@@ -584,3 +595,11 @@ def hex_tofrom_hex(newsystem, coord):
     This identity conversion is used by happenstance in to/from operations
     from config files where apriori knowledge of the systems is not available """
     return newsystem.coord(x=coord.x, y=coord.y, z=coord.z)
+
+@RectCoordinateSystem.register_from_converter("oddr")
+@RectCoordinateSystem.register_to_converter("oddr")
+def oddr_tofrom_oddr(newsystem, coord):
+    """convert from oddr coordinate to oddr coordinate
+    This identity conversion is used by happenstance in to/from operations
+    from config files where apriori knowledge of the systems is not available """
+    return newsystem.coord(x=coord.x, y=coord.y)
