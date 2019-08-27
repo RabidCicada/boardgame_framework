@@ -352,10 +352,15 @@ class HexCoordinateSystem(CoordinateSystem):
         rotate = cnt % len(self.dirs) % 3
 
         def transform(vec):
-            newvec = self.coord_cls(system=self, x=neg*vec[(0+rotate)%3],
-                                    y=neg*vec[(1+rotate)%3], z=neg*vec[(2+rotate)%3])
-            #logger.debug("Cnt: %s Rot#: %s, Neg: %s, Src Vec: %s, Rotated Vec: %s",
-            #             cnt, rotate, neg, vec, newvec)
+            newvec = [None for _ in range(3)]
+            for idx in range(3):
+                #print(f'idx:{idx}, modded:{(idx+rotate)%3}')
+                newvec[(idx+rotate)%3] = neg*vec[idx]
+            newvec = self.coord_cls(system=self,x=newvec[0],y=newvec[1],z=newvec[2])
+            # newvec = self.coord_cls(system=self, x=neg*vec[(0+rotate)%3],
+            #                         y=neg*vec[(1+rotate)%3], z=neg*vec[(2+rotate)%3])
+            logger.debug("Cnt: %s Rot#: %s, Neg: %s, Src Vec: %s, Rotated Vec: %s",
+                         cnt, rotate, neg, vec, newvec)
             return newvec
 
         return transform
@@ -364,11 +369,15 @@ class HexCoordinateSystem(CoordinateSystem):
         """Given adjacent edge indexes from the self system and other system, return
         the rotation count that, when applied to an edge index from the other system
         , results in the edge that faces the same direction in the self system (positive nt)"""
-        cnt = selfedge_idx - ((otheredge_idx + len(self.dirs)//2) % len(self.dirs))
-        if cnt < 0:
-            return cnt + len(self.dirs)
 
-        return cnt
+        cnt = selfedge_idx - ((otheredge_idx + len(self.dirs)//2) % len(self.dirs))
+
+        mapped_offset = cnt
+        if mapped_offset < 0:
+            mapped_offset =  cnt + len(self.dirs)
+
+        logger.debug("selfedgeidx: %s, otheredgeidx: %s, mappingoffset: %s",selfedge_idx, otheredge_idx, mapped_offset)
+        return mapped_offset
 
 
     def gen_rotated_coords(self, anchor, coords, cnt):

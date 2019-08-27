@@ -457,21 +457,20 @@ if __name__ == '__main__':
     #grid = RenderGrid( cellmgr, radius=32, primary_coord_sys=("Global") )
 
     cellmgr.register_coord_reg_callback(grid.track_coord_stats)
-    cellmgr.load_cells(infile,basedir=pathlib.Path('..','tests','data_files','gloomhaven'))
-    grid.resolve_layout()
-    cells = cellmgr.by_coord_id(grid.primary_coord_sys)
 
+    try:
+        cellmgr.load_cells(infile,basedir=pathlib.Path('..','tests','data_files','gloomhaven'))
+        grid.resolve_layout()
+        cells = cellmgr.by_coord_id(grid.primary_coord_sys)
 
-    #print( m.ascii() )
-    #myfont = pygame.font.SysFont('Comic Sans MS', 30)
-
-    logging.debug("Known systems: %s", list(CoordinateSystemMgr.get_known_systems()))
-    logging.debug("Known sys_stats: %s", list(grid.get_known_coordsys_stats()))
-    stats = grid.get_coordsys_stats(grid.primary_coord_sys)
-    logging.debug("%s Coordinate System is %s xunits and %s yunits, minx %s maxx %s, miny %s maxy %s",grid.primary_coord_sys, stats['xsize'], stats['ysize'], stats['min_x'], stats['max_x'], stats['min_y'], stats['max_y'])
-
-    for cell in cells:
-        logging.debug("%s",cell._str_with_coords())
+        logging.debug("Known systems: %s", list(CoordinateSystemMgr.get_known_systems()))
+        logging.debug("Known sys_stats: %s", list(grid.get_known_coordsys_stats()))
+        stats = grid.get_coordsys_stats(grid.primary_coord_sys)
+        logging.debug("%s Coordinate System is %s xunits and %s yunits, minx %s maxx %s, miny %s maxy %s",grid.primary_coord_sys, stats['xsize'], stats['ysize'], stats['min_x'], stats['max_x'], stats['min_y'], stats['max_y'])
+    finally: # Dump coordinates of cells for debugging purposes
+        cells = cellmgr.by_coord_id(grid.primary_coord_sys)
+        for cell in cells:
+            logging.debug("%s",cell._str_with_coords())
     #logger.error("%s\n\n%s ", orient_pointy,orient_flat)
 
     # preserializer.register(Cell)

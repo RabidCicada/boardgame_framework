@@ -492,7 +492,7 @@ class CellMgr():
 
                     cell2_coord_system = CoordinateSystemMgr.get_coord_system(c2_sysid)
                     cell2_cells = self.by_coord_id(c2_sysid)
-                    logger.debug("cell2_cells:%s",cell2_cells)
+                    logger.debug("cell2_cells:%s",''.join(["\n"+str(cell) for cell in cell2_cells]))
 
                     #Retrieve individual adjacent cells from parent cells
                     c1 = self.by_coord(cell1_coord_system.from_other_system(
@@ -530,7 +530,7 @@ class CellMgr():
                         # map the local edge in the seam data to the equivalent global edge
                         mapping_offset = mapped_edge_offsets[c1_sysid]
                         seamededge_idx = (conn_pair[0][Conn.EDGE]+mapping_offset)%len(seamed_coord_sys.dirs)
-                        logger.debug("EdgeDetails for %s: localedge:%s glblcnt:%s glbledge: %s",
+                        logger.debug("EdgeDetails for %s: localedge:%s offset:%s glbledge: %s",
                                      conn_pair[0][0], conn_pair[0][Conn.EDGE], mapping_offset, seamededge_idx)
 
                     # find offset cnt to add or subtract for directions from other
@@ -561,19 +561,20 @@ class CellMgr():
                         if cell is not c2:
 
                             # Create direction vector from anchor
-                            #logger.debug("Actual Coord : {cell.coord}")
+                            logger.debug("Anchor Coord: %s Original Coord : %s", anchor, cell.coord)
                             coord_vec = cell.coord - anchor
-                            #logger.debug("Coord Vec: {coord_vec}")
+                            logger.debug("Coord Vec: %s", coord_vec)
                             # Transform vector to be in terms of the seamed system
                             new_vec = vec_xform(coord_vec)
-                            #logger.debug("transformed vec:{new_vec}")
+                            logger.debug("rotated vec: %s", new_vec)
                             # Apply vector to new system coordinate
                             new_coord = remapped_anchor + new_vec
+                            logger.debug("remapped anchor + rotated vec = %s + %s ==> %s", remapped_anchor, new_vec, new_coord)
                             # logger.debug("Remapping %s to %s", repr(cell.coord), repr(new_coord))
                             if self.by_coord(new_coord):
                                 raise RuntimeError(
                                     f"Mapped coordinate {new_coord} from original "
-                                    f"coordinate {cell}{cell.coord} already exists")
+                                    f"coordinate {cell} already exists")
                             cell.assign_default_coord(new_coord)
 
                     self.annealed.add(c2_sysid)
