@@ -1,16 +1,17 @@
 ---
   cells:
-    - name: "G1b"
+    - name: "B3b"
       auto_cells:
-        name: "CHILD~G1b"
+        name: "CHILD~B3b"
         cell_type: "hex"
         dimensions:
           system: "oddr"
-          dims: [8,3]
+          dims: [4,4]
         xform:
           - type: "oddr_flat_filter"
             data:
-              - [ 0,0,0,0,0,0,0,0 ]
-              -  [ 0,0,0,0,0,0,0,1 ]
-              - [ 0,0,0,0,0,0,0,0 ]
+              -  [ 0,0,0,0 ]
+              - [ 1,0,0,0 ]
+              -  [ 0,0,0,0]
+              - [ 1,0,0,0 ]
           - type: "auto_connect"
