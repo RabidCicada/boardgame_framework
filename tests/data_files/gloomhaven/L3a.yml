@@ -1,0 +1,23 @@
+---
+  cells:
+    - name: "L3a"
+      auto_cells:
+        name: "CHILD~L3a"
+        cell_type: "hex"
+        attributes:
+          purpose: "fluff"
+          attr1: "Morefluff"
+        dimensions:
+          system: "oddr"
+          dims: [5,7]
+        xform:
+          - type: "oddr_flat_filter"
+            data:
+              - [ 0,0,0,0,0 ]
+              -  [ 0,0,0,0,1 ]
+              - [ 0,0,0,0,0 ]
+              -  [ 0,0,0,0,1 ]
+              - [ 0,0,0,0,0 ]
+              -  [ 0,0,0,0,1 ]
+              - [ 0,0,0,0,0 ]
+          - type: "auto_connect"

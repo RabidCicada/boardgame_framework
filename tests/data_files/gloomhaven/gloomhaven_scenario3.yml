@@ -1,0 +1,52 @@
+---
+  imports:
+    - "L3a.yml"
+    - "L1b.yml"
+    - "B2a.yml"
+    - "B4a.yml"
+    - "B1a.yml"
+    - "B3a.yml"
+  cells:
+    - name: "L3a-B4a-Door"
+      cell_type: "hex"
+    - name: "L3a-B2a-Door"
+      cell_type: "hex"
+    - name: "L1b-B3a-Door"
+      cell_type: "hex"
+    - name: "L1b-B1a-Door"
+      cell_type: "hex"
+  seams:
+    -
+      seam_type: "auto"
+      system_id: "Global"
+      integrated_system: "hex"
+      raw_system: "oddr"
+      root_sys_id: "L3a"
+      connections:
+        -
+          - ["L3a",[2,6],2]
+          - ["L3a-B4a-Door",[0,0],5]
+        -
+          - ["L3a-B4a-Door",[0,0],2]
+          - ["B4a",[1,3],2]
+        -
+          - ["L3a",[2,0],4]
+          - ["L3a-B2a-Door",[0,0],1]
+        -
+          - ["L3a-B2a-Door",[0,0],5]
+          - ["B2a",[1,3],2]
+        -
+          - ["L3a",[4,6],3]
+          - ["L1b",[4,0],3]
+        -
+          - ["L1b",[1,0],4]
+          - ["L1b-B3a-Door",[0,0],1]
+        -
+          - ["L1b-B3a-Door",[0,0],5]
+          - ["B3a",[1,3],2]
+        -
+          - ["L1b",[1,6],2]
+          - ["L1b-B1a-Door",[0,0],5]
+        -
+          - ["L1b-B1a-Door",[0,0],2]
+          - ["B1a",[1,3],2]

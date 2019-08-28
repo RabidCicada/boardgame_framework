@@ -492,7 +492,7 @@ class CellMgr():
 
                     cell2_coord_system = CoordinateSystemMgr.get_coord_system(c2_sysid)
                     cell2_cells = self.by_coord_id(c2_sysid)
-                    logger.debug("cell2_cells:%s",''.join(["\n"+str(cell) for cell in cell2_cells]))
+                    logger.debug("cell2_cells:%s",''.join(["\n"+cell._str_with_coords() for cell in cell2_cells]))
 
                     #Retrieve individual adjacent cells from parent cells
                     c1 = self.by_coord(cell1_coord_system.from_other_system(

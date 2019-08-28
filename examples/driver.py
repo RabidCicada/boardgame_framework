@@ -502,7 +502,7 @@ if __name__ == '__main__':
         pygame.init()
         fpsClock = pygame.time.Clock()
 
-        window = pygame.display.set_mode( ( 1280, 960 ), 1 )
+        window = pygame.display.set_mode( ( 1280, 1280 ), 1 )
         from pygame.locals import QUIT, MOUSEBUTTONDOWN
 
         #Leave it running until exit

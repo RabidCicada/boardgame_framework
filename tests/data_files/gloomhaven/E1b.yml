@@ -1,0 +1,17 @@
+---
+  cells:
+    - name: "E1b"
+      auto_cells:
+        name: "CHILD~E1b"
+        cell_type: "hex"
+        dimensions:
+          system: "oddr"
+          dims: [5,5]
+        xform:
+          - type: "oddr_flat_filter"
+            data:
+              -  [ 0,0,0,0,0 ]
+              - [ 1,0,0,0,0 ]
+              -  [ 0,0,0,0,0 ]
+              - [ 1,0,0,0,0 ]
+          - type: "auto_connect"
