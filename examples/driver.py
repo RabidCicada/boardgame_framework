@@ -481,6 +481,8 @@ if __name__ == '__main__':
     primary_coord_sys = CoordinateSystemMgr.get_coord_system(grid.primary_coord_sys)
     for cell in cells:
         cell.data['label'] = "WHITE"
+    for cell in cells:
+        print(f"{cell}-->{cell.data['label']}")
 
     def check_validity(coord):
         #print(f"checking {coord}")
@@ -500,7 +502,6 @@ if __name__ == '__main__':
 
     for cell in cells:
         print(f"{cell}-->{cell.data['label']}")
-    exit()
 
     # preserializer.register(Cell)
     # preserializer.register(CubedCoord)
@@ -555,3 +556,4 @@ if __name__ == '__main__':
     finally:
         logging.debug("%s Coordinate System is %s xunits and %s yunits, minx %s maxx %s, miny %s maxy %s", grid.primary_coord_sys, stats['xsize'], stats['ysize'], stats['min_x'], stats['max_x'], stats['min_y'], stats['max_y'])
         pygame.quit()
+        exit()

@@ -61,10 +61,6 @@ def a_star_search(cells, start, goal, hasJump=False, hasFlying=False):
     path.reverse() # optional
     return path, cost_so_far[goal]
 
-
-def check_validity():
-    pass
-
 def flood_fill(coord, dirs, check_validity, color):
     print(f"Flood Filling starting at ({coord})")
     #here check_validity is a function that given coordinates of the point tells you whether
@@ -85,8 +81,38 @@ def flood_fill(coord, dirs, check_validity, color):
                     q.append(newcoord)
                     seen.append(newcoord)
 
+# Input: img
+# Output: resultImg
+# 1 padImg ← pad img with background color;
+# 2 seed ← (0,0);
+# 3 padImg ← floodfill(padImg, seed) with label color;
+# 4 for x in range(padImg.height) do
+# ; // Main Filling Process
+# 5 for y in range(padImg.width) do
+# 6 if padImg[x][y] == background color then
+# 7 seed ← (x,y), i ← 1;
+# 8 while padImg[x][y-i] == boundary color
+# do
+# 9 i ← i + 1;
+# 10 if padImg[x][y-i] == boundary color then
+# 11 floodfill(padImg, seed) with filling
+# color;
+# 12 if resultImg[x][y] == exterior label color then
+# 13 resultImg[x][y] ← background color;
+# 14 else
+# 15 floodfill(padImg, seed) with label color;
+# 16 croppedImg ← crop padImg to original size, delete
+# padding;
+# ; // Crop-and-‘Inverse’ process
+# 17 resultImg ← croppedImg;
+# 18 for x in range(resultImg.height) do
+# 19 for y in range(resultImg.width) do
+# 20 if resultImg[x][y] == exterior label color then
+# 21 resultImg[x][y] ← background color;
+# 22 if resultImg[x][y] == interior label color then
+# 23 resultImg[x][y] ← mask color;
 
-#
+
 # def scaff(CellMgr):
 #
 #
