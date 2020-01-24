@@ -17,6 +17,8 @@ def checkallequal(iteratable):
         return True
     return all(first == rest for rest in iterator)
 
+
+# Incomplete
 def a_star_search(cells, start, goal, hasJump=False, hasFlying=False):
     # assert our locations exist
     assert graph.getTileByMapCoordinates(start)
@@ -58,3 +60,38 @@ def a_star_search(cells, start, goal, hasJump=False, hasFlying=False):
     path.append(start) # optional
     path.reverse() # optional
     return path, cost_so_far[goal]
+
+
+def check_validity():
+    pass
+
+def flood_fill(coord, dirs, check_validity, color):
+    print(f"Flood Filling starting at ({coord})")
+    #here check_validity is a function that given coordinates of the point tells you whether
+    #the point should be colored or not
+    q = list()
+    seen = list()
+    q.append(coord)
+    seen.append(coord)
+    while (q):
+        coord = q.pop()
+        #print(f"ff->({coord})")
+        color(coord)
+
+        for d in dirs:
+            newcoord = coord+d
+            if (check_validity(newcoord)):
+                if newcoord not in seen:
+                    q.append(newcoord)
+                    seen.append(newcoord)
+
+
+#
+# def scaff(CellMgr):
+#
+#
+#     #Skip padding image because we rely on retrieval giving us "empty/exterior" values for padding cells
+#
+#     curr_coord = (0,0)
+#
+#     flood_fill(,curr_coord)

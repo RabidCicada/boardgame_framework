@@ -41,6 +41,14 @@ To have pbr generate Changelog and AUTHORS automatically:
 
     python setup.py sdist
 
+========================
+To Run the Sample Driver
+========================
+
+.. code-block:: bash
+
+    PYTHONPATH=./ python ../examples/driver.py -f <cellfile> -l loglevel -r <radius in pixels of hexes> -t target_cell_from_file_to_render
+
 ================
 To Run the Tests
 ================

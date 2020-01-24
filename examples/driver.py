@@ -28,6 +28,7 @@ from boardgame_framework.coord import (
     RectCoord,
     RectCoordinateSystem
 )
+from boardgame_framework.utils import flood_fill
 from boardgame_framework.serializers.yaml import yaml
 
 # from asphalt.serialization.serializers.yaml import YAMLSerializer
@@ -43,14 +44,14 @@ from boardgame_framework.serializers.yaml import yaml
 
 logger = logging.getLogger(__name__)
 
-SQRT3 = math.sqrt( 3 )
+SQRT3 = math.sqrt(3)
 NUM_COLS = 20
 NUM_ROWS = 20
 
 
-BLACK = (0,0,0)
-WHITE = (255,255,255)
-RED = (255,0,0)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
 
 
 # @dataclass(eq=True, frozen=True)
@@ -103,20 +104,20 @@ class Layout:
 #     logger.debug("textSurface type: %s",type(textSurface))
 #     return textSurface, rect
 
-def display_in_bounds(lines,locx,locy,bndx,bndy, display):
-    font = pygame.freetype.SysFont('comicsansms',10)
+def display_in_bounds(lines, locx, locy, bndx, bndy, display):
+    font = pygame.freetype.SysFont('comicsansms', 10)
     surfsandrects = list()
     #currlocx = locx
     currlocy = locy
     for line in lines:
         #logger.debug("Drawing %s at (%s,%s)", line, locx, currlocy)
         TextSurf, TextRect = font.render(line, pygame.Color('black'))
-        TextRect.left=locx
-        TextRect.top=currlocy
+        TextRect.left = locx
+        TextRect.top = currlocy
         surfsandrects.append((TextSurf, TextRect))
         currlocy = currlocy + TextRect.height
         if currlocy > bndy:
-            logger.error("currlocy %s bndy %s",currlocy, bndy)
+            logger.error("currlocy %s bndy %s", currlocy, bndy)
             raise ValueError("Lines exceed vertical size")
 
     for TextSurf, TextRect in surfsandrects:
@@ -124,9 +125,9 @@ def display_in_bounds(lines,locx,locy,bndx,bndy, display):
         display.blit(TextSurf, TextRect)
 
 def message_display(text, locx, locy, display):
-    font = pygame.freetype.SysFont('comicsansms',10)
+    font = pygame.freetype.SysFont('comicsansms', 10)
     TextSurf, TextRect = font.render(text, pygame.Color('black'))
-    TextRect.center = locx,locy
+    TextRect.center = locx, locy
     display.blit(TextSurf, TextRect)
 
 
@@ -138,11 +139,11 @@ def message_display(text, locx, locy, display):
 #                 2.0 / 3.0, 0.0, -1.0 / 3.0, SQRT3 / 3.0,
 #                 0.0)
 
-class Render( pygame.Surface ):
+class Render(pygame.Surface):
 
     __metaclass__ = ABCMeta
 
-    def __init__( self, cellmgr, radius=24, primary_coord_sys= "Global", *args, **keywords ):
+    def __init__(self, cellmgr, radius=24, primary_coord_sys = "Global", *args, **keywords):
         self.cellmgr = cellmgr
         self.primary_coord_sys = primary_coord_sys
         self.radius = radius
@@ -150,21 +151,21 @@ class Render( pygame.Surface ):
         self.rows = NUM_ROWS
         self.hex_width = SQRT3 * self.radius
         self.hex_height = 2 * self.radius
-        self.xycoordsys = CoordinateSystemMgr.create_coord_system("oddr","renderxy")
+        self.xycoordsys = CoordinateSystemMgr.create_coord_system("oddr", "renderxy")
         self.layout = None
         self._stats_by_coord_tuple = dict()
 
-        P_TL_COORD = ( 0, .5 * self.radius ) # Pointy -- Top Left most point
-        P_TM_COORD = ( SQRT3 * self.radius / 2, 0 ) # Pointy -- Top most point (Middle)
-        P_TR_COORD = ( SQRT3 * self.radius, .5 * self.radius ) # Pointy -- Top Right most point
-        P_BR_COORD = ( SQRT3 * self.radius, 1.5 * self.radius ) # Pointy -- Bottom Right most point
-        P_BM_COORD = ( SQRT3 * self.radius / 2, 2 * self.radius ) # Pointy -- Bottom most point (Middle)
-        P_BL_COORD = ( 0, 1.5 * self.radius ) # Pointy -- Bottom Left most point
+        P_TL_COORD = (0, .5 * self.radius) # Pointy -- Top Left most point
+        P_TM_COORD = (SQRT3 * self.radius / 2, 0) # Pointy -- Top most point (Middle)
+        P_TR_COORD = (SQRT3 * self.radius, .5 * self.radius) # Pointy -- Top Right most point
+        P_BR_COORD = (SQRT3 * self.radius, 1.5 * self.radius) # Pointy -- Bottom Right most point
+        P_BM_COORD = (SQRT3 * self.radius / 2, 2 * self.radius) # Pointy -- Bottom most point (Middle)
+        P_BL_COORD = (0, 1.5 * self.radius) # Pointy -- Bottom Left most point
 
         # Colors for the map
-        self.GRID_COLOR = pygame.Color( 50, 50, 50 )
+        self.GRID_COLOR = pygame.Color(50, 50, 50)
 
-        super( Render, self ).__init__( ( self.width, self.height ), *args, **keywords )
+        super(Render, self).__init__((self.width, self.height ), *args, **keywords)
 
         self.cell = [P_TL_COORD,
                      P_TM_COORD,
@@ -177,27 +178,27 @@ class Render( pygame.Surface ):
 
 
     @property
-    def width( self ):
+    def width(self):
         return	self.cols * self.hex_width + self.hex_width/ 2.0
     @property
-    def height( self ):
-        return ( self.rows + .5 ) * self.hex_height
+    def height(self):
+        return (self.rows + .5) * self.hex_height
 
-    def get_surface( self, row, col ):
+    def get_surface(self, row, col):
         """
         Returns a subsurface corresponding to the surface, hopefully with trim_cell wrapped around the blit method.
         """
         width = SQRT3 * self.radius
         height = 2 * self.radius
 
-        top = ( row - math.ceil( col / 2.0 ) ) * height + ( height / 2 if col % 2 == 1 else 0 )
+        top = (row - math.ceil( col / 2.0 )) * height + (height / 2 if col % 2 == 1 else 0)
         left = 1.5 * self.radius * col
 
-        return self.subsurface( pygame.Rect( left, top, width, height ) )
+        return self.subsurface(pygame.Rect(left, top, width, height))
 
     # Draw methods
     @abstractmethod
-    def draw( self ):
+    def draw(self):
         """
         An abstract base method for various render objects to call to paint
         themselves.  If called via super, it fills the screen with the colorkey,
@@ -206,13 +207,13 @@ class Render( pygame.Surface ):
         """
         color = self.get_colorkey()
         if not color:
-            magenta = pygame.Color( 255, 0, 255 )
-            self.set_colorkey( magenta )
+            magenta = pygame.Color(255, 0, 255)
+            self.set_colorkey(magenta)
             color = magenta
-        self.fill( color )
+        self.fill(color)
 
     # Identify cell
-    def get_cell( self,  x, y  ):
+    def get_cell(self, x, y):
         """
         Identify the cell clicked in terms of row and column
         """
@@ -258,29 +259,30 @@ class Render( pygame.Surface ):
          to a renderer, but may be used to track any information as coordinates
          are assigned.
          """
-        xy_coord = self.xycoordsys.from_other_system(coord)
-        if coord.system.system_tuple not in self._stats_by_coord_tuple:
-            self._stats_by_coord_tuple[coord.system.system_tuple] = dict()
+        if coord.system != self.xycoordsys:
+            xy_coord = self.xycoordsys.from_other_system(coord)
+            if coord.system.system_tuple not in self._stats_by_coord_tuple:
+                self._stats_by_coord_tuple[coord.system.system_tuple] = dict()
 
-        if ('min_x' not in self._stats_by_coord_tuple[coord.system.system_tuple]
-        or xy_coord.x < self._stats_by_coord_tuple[coord.system.system_tuple]['min_x']
-           ):
-           self._stats_by_coord_tuple[coord.system.system_tuple]['min_x'] = xy_coord.x
+            if ('min_x' not in self._stats_by_coord_tuple[coord.system.system_tuple]
+            or xy_coord.x < self._stats_by_coord_tuple[coord.system.system_tuple]['min_x']
+               ):
+               self._stats_by_coord_tuple[coord.system.system_tuple]['min_x'] = xy_coord.x
 
-        if ('max_x' not in self._stats_by_coord_tuple[coord.system.system_tuple]
-        or xy_coord.x > self._stats_by_coord_tuple[coord.system.system_tuple]['max_x']
-           ):
-           self._stats_by_coord_tuple[coord.system.system_tuple]['max_x'] = xy_coord.x
+            if ('max_x' not in self._stats_by_coord_tuple[coord.system.system_tuple]
+            or xy_coord.x > self._stats_by_coord_tuple[coord.system.system_tuple]['max_x']
+               ):
+               self._stats_by_coord_tuple[coord.system.system_tuple]['max_x'] = xy_coord.x
 
-        if ('min_y' not in self._stats_by_coord_tuple[coord.system.system_tuple]
-        or xy_coord.y < self._stats_by_coord_tuple[coord.system.system_tuple]['min_y']
-           ):
-           self._stats_by_coord_tuple[coord.system.system_tuple]['min_y'] = xy_coord.y
+            if ('min_y' not in self._stats_by_coord_tuple[coord.system.system_tuple]
+            or xy_coord.y < self._stats_by_coord_tuple[coord.system.system_tuple]['min_y']
+               ):
+               self._stats_by_coord_tuple[coord.system.system_tuple]['min_y'] = xy_coord.y
 
-        if ('max_y' not in self._stats_by_coord_tuple[coord.system.system_tuple]
-        or xy_coord.y > self._stats_by_coord_tuple[coord.system.system_tuple]['max_y']
-           ):
-           self._stats_by_coord_tuple[coord.system.system_tuple]['max_y'] = xy_coord.y
+            if ('max_y' not in self._stats_by_coord_tuple[coord.system.system_tuple]
+            or xy_coord.y > self._stats_by_coord_tuple[coord.system.system_tuple]['max_y']
+               ):
+               self._stats_by_coord_tuple[coord.system.system_tuple]['max_y'] = xy_coord.y
 
     def get_known_coordsys_stats(self):
         """Return the keys of all the known coordinate systems for stat tracking"""
@@ -472,6 +474,33 @@ if __name__ == '__main__':
         for cell in cells:
             logging.debug("%s",cell._str_with_coords())
     #logger.error("%s\n\n%s ", orient_pointy,orient_flat)
+
+
+    #FloodFill Testing
+    cells = cellmgr.by_coord_id(grid.primary_coord_sys)
+    primary_coord_sys = CoordinateSystemMgr.get_coord_system(grid.primary_coord_sys)
+    for cell in cells:
+        cell.data['label'] = "WHITE"
+
+    def check_validity(coord):
+        #print(f"checking {coord}")
+        cell = cellmgr.by_coord(coord)
+        return cell.data["label"]=="WHITE" if cell else False
+
+    def color(coord):
+        print(f"coloring {coord} ==> 'BLUE'")
+        cell = cellmgr.by_coord(coord)
+        cell.data["label"] = "BLUE"
+        return
+
+    speccords =  next(iter(cells)).coords
+    print(f"Coords:{speccords}")
+    seed_coord = speccords[primary_coord_sys.system_tuple]
+    flood_fill(seed_coord, primary_coord_sys.dirs, check_validity, color)
+
+    for cell in cells:
+        print(f"{cell}-->{cell.data['label']}")
+    exit()
 
     # preserializer.register(Cell)
     # preserializer.register(CubedCoord)

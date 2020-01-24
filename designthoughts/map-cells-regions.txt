@@ -27,3 +27,6 @@ Ask engine for all possible destination cells
 Ask engine for all possible move patterns through a particular cells
 
 Automatic annealing of many map segments into a universal grid where the invalid locations are simply non-existent.  E.G. the rooms joined together in gloomhaven
+
+On the Topic of region annealing/joining.  There may be a desire for automatic region filling between the pieces when the voids are completely encircled by surrounding tiles
+This is the case for scenario 3 of gloomhaven
