@@ -61,7 +61,7 @@ def a_star_search(cells, start, goal, hasJump=False, hasFlying=False):
     path.reverse() # optional
     return path, cost_so_far[goal]
 
-def flood_fill(coord, dirs, check_validity, color):
+def flood_fill(coord, dirs, check_validity, color, fill_callback=None):
     print(f"Flood Filling starting at ({coord})")
     #here check_validity is a function that given coordinates of the point tells you whether
     #the point should be colored or not
@@ -73,6 +73,9 @@ def flood_fill(coord, dirs, check_validity, color):
         coord = q.pop()
         #print(f"ff->({coord})")
         color(coord)
+
+        if fill_callback:
+            fill_callback(coord)
 
         for d in dirs:
             newcoord = coord+d

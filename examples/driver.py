@@ -13,6 +13,7 @@ import argparse
 import math
 import pathlib
 import sys
+import time
 
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
@@ -397,6 +398,9 @@ class RenderGrid( Render ):
             points = [( x*self.layout.scale.x + left, y*self.layout.scale.y + top ) for ( x, y ) in self.cell]
 
             # Draw the polygon onto the surface
+            print(f"DrawCell Color {cell.data['color']}")
+            pygame.draw.polygon( self,  pygame.Color(cell.data['color']), points, 0 )
+            print(f"DrawCellBorder Color {self.GRID_COLOR}")
             pygame.draw.polygon( self, self.GRID_COLOR, points, 1 )
 
             #Create location strings
@@ -475,64 +479,84 @@ if __name__ == '__main__':
             logging.debug("%s",cell._str_with_coords())
     #logger.error("%s\n\n%s ", orient_pointy,orient_flat)
 
-
-    #FloodFill Testing
-    cells = cellmgr.by_coord_id(grid.primary_coord_sys)
-    primary_coord_sys = CoordinateSystemMgr.get_coord_system(grid.primary_coord_sys)
-    for cell in cells:
-        cell.data['label'] = "WHITE"
-    for cell in cells:
-        print(f"{cell}-->{cell.data['label']}")
-
-    def check_validity(coord):
-        #print(f"checking {coord}")
-        cell = cellmgr.by_coord(coord)
-        return cell.data["label"]=="WHITE" if cell else False
-
-    def color(coord):
-        print(f"coloring {coord} ==> 'BLUE'")
-        cell = cellmgr.by_coord(coord)
-        cell.data["label"] = "BLUE"
-        return
-
-    speccords =  next(iter(cells)).coords
-    print(f"Coords:{speccords}")
-    seed_coord = speccords[primary_coord_sys.system_tuple]
-    flood_fill(seed_coord, primary_coord_sys.dirs, check_validity, color)
-
-    for cell in cells:
-        print(f"{cell}-->{cell.data['label']}")
-
-    # preserializer.register(Cell)
-    # preserializer.register(CubedCoord)
-    # preserializer.register(CellMgr)
-    # preserializer.register(HexCoord)
-    # preserializer.register(RectCoord)
-    # preserializer.register(CoordinateSystem)
-    # preserializer.register(CoordinateSystemMgr)
-    # preserializer.register(HexCoordinateSystem)
-    # preserializer.register(RectCoordinateSystem)
-    # data = preserializer.preserialize(cells)
-
-    # serialized = jsonserializer.serialize(data)
-    # with open("serialized.json","wb") as ofile:
-    # 	ofile.write(serialized)
-    #yamloutput = yaml.dump(cells)
-    #print(yamloutput)
-
-
-    # serialized = yamlserializer.serialize(cells)
-    # with open("serialized.yml","w") as ofile:
-    # 	ofile.write(yamloutput)
-
-    #results = yaml.load(yamloutput)
-    #print(results)
-
+    print(f"Initializing pygame")
+    #Start pygame
     try:
         pygame.init()
+        window = pygame.display.set_mode( ( 1280, 1280 ), 1 )
+
+
+
+        #FloodFill Testing
+        cells = cellmgr.by_coord_id(grid.primary_coord_sys)
+        primary_coord_sys = CoordinateSystemMgr.get_coord_system(grid.primary_coord_sys)
+        DEF_COLOR="yellow"
+        FILLED_COLOR="blue"
+        for cell in cells:
+            cell.data['color'] = DEF_COLOR
+        for cell in cells:
+            print(f"{cell}-->{cell.data['color']}")
+
+        def check_validity(coord):
+            #print(f"checking {coord}")
+            cell = cellmgr.by_coord(coord)
+            return cell.data['color']==DEF_COLOR if cell else False
+
+        def color(coord):
+            #print(f"coloring {coord} ==> {FILLED_COLOR}")
+            cell = cellmgr.by_coord(coord)
+            cell.data['color'] = FILLED_COLOR
+            return
+
+        def fill_callback(coord):
+            logging.debug("Filling %s",coord)
+            window.fill( pygame.Color( 'white' ) )
+            grid.draw()
+            # units.draw()
+            # fog.draw()
+            window.blit( grid, ( 0, 0 ) )
+            # window.blit( units, ( 0, 0 ) )
+            # window.blit( fog, ( 0, 0 ) )
+            pygame.display.update()
+            time.sleep(.25)
+
+        speccords =  next(iter(cells)).coords
+        #print(f"Coords:{speccords}")
+        seed_coord = speccords[primary_coord_sys.system_tuple]
+        flood_fill(seed_coord, primary_coord_sys.dirs, check_validity, color, fill_callback = fill_callback)
+
+        for cell in cells:
+            print(f"{cell}-->{cell.data['color']}")
+
+        # preserializer.register(Cell)
+        # preserializer.register(CubedCoord)
+        # preserializer.register(CellMgr)
+        # preserializer.register(HexCoord)
+        # preserializer.register(RectCoord)
+        # preserializer.register(CoordinateSystem)
+        # preserializer.register(CoordinateSystemMgr)
+        # preserializer.register(HexCoordinateSystem)
+        # preserializer.register(RectCoordinateSystem)
+        # data = preserializer.preserialize(cells)
+
+        # serialized = jsonserializer.serialize(data)
+        # with open("serialized.json","wb") as ofile:
+        # 	ofile.write(serialized)
+        #yamloutput = yaml.dump(cells)
+        #print(yamloutput)
+
+
+        # serialized = yamlserializer.serialize(cells)
+        # with open("serialized.yml","w") as ofile:
+        # 	ofile.write(yamloutput)
+
+        #results = yaml.load(yamloutput)
+        #print(results)
+
+        #pygame.init()
         fpsClock = pygame.time.Clock()
 
-        window = pygame.display.set_mode( ( 1280, 1280 ), 1 )
+
         from pygame.locals import QUIT, MOUSEBUTTONDOWN
 
         #Leave it running until exit
@@ -553,6 +577,8 @@ if __name__ == '__main__':
             # window.blit( fog, ( 0, 0 ) )
             pygame.display.update()
             fpsClock.tick( 10 )
+    except Exception as ex:
+        print(ex)
     finally:
         logging.debug("%s Coordinate System is %s xunits and %s yunits, minx %s maxx %s, miny %s maxy %s", grid.primary_coord_sys, stats['xsize'], stats['ysize'], stats['min_x'], stats['max_x'], stats['min_y'], stats['max_y'])
         pygame.quit()
