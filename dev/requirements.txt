@@ -1,7 +1,0 @@
--r ../requirements.txt
-sphinx
-sphinxcontrib-apidoc
-pytest
-tox
-pylint
-pygame
