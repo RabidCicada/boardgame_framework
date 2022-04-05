@@ -8,13 +8,11 @@ write_to = "src/boardgame_framework/version.py"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py36,py37,py38
+envlist = py38
 isolated_build = True
 
 [gh-actions]
 python =
-    3.6: py36
-    3.7: py37
     3.8: py38
 
 [testenv]

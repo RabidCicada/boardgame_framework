@@ -6,7 +6,6 @@ import pathlib
 from . import cell
 from enum import Enum, IntEnum
 from dataclasses import dataclass
-from numpy import ndarray
 
 logger = logging.getLogger(__name__)
 

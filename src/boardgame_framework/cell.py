@@ -689,11 +689,12 @@ def load_cell_json(cellmgr, cell_path, basedir="."):
 @CellMgr.register_cell_parser('.yml')
 def load_cell_yml(cellmgr, cell_path, basedir="."):
     """Parse cell file written in yaml"""
-    import ruamel.yaml as yaml
+    import ruamel
     file_path = pathlib.Path(basedir, cell_path)
     logger.debug("File path: %s", file_path.absolute())
     with open(file_path, "r") as yaml_cells:
-        data = yaml.safe_load(yaml_cells)
+        yaml=ruamel.yaml.YAML(typ='safe', pure=True)
+        data = yaml.load(yaml_cells)
 
     return cellmgr.process_cells(data, basedir=basedir)
 

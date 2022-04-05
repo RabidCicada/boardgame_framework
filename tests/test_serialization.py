@@ -13,11 +13,11 @@ def test_serialize_cell():
     cellmgr = CellMgr()
     cells = cellmgr.load_cells("gloomhaven_scenario1.yml",basedir=pathlib.Path('..','tests','data_files','gloomhaven'))
 
-    assert len(cells) == 94 #The 5 top level rooms + their contained cells
+    assert len(cells) == 93 #5 top level cells + 35 + 23 + 30
 
     cells = cellmgr.by_coord_id("Global")
 
-    assert len(cells) == 91 #3 top level rooms don't have coordinate systems (The ones containing auto_cells)
+    assert len(cells) == 90 #3 top level rooms don't have coordinate systems (The ones containing auto_cells)
 
     yamloutput = yaml.dump(cells)
 
